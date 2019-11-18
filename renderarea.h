@@ -79,6 +79,7 @@ private:
     Player player;
     Player testPlayer;
     Player testPlayerTwo;
+    Player testPlayerThree;
     Enemy enemyTest;
     Food food;
     QPen pen;

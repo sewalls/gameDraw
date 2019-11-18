@@ -18,8 +18,8 @@ public:
     void target(QPointF target);
 
     void keyPressEvent(QKeyEvent *event) override;
-    void keyReleaseEvent(QKeyEvent *event) override;
-
+    void keyReleaseEvent(QKeyEvent *event) override;  
+    //privatize these things
     double acelX = 0;
     double acelY = 0;
     double velX = 0;

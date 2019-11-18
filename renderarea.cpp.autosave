@@ -3,8 +3,8 @@
 
 #include <QPainter>
 
-RenderArea::RenderArea(QWidget *parent)
-    : QWidget(parent)/*, food({200, 220})*/
+RenderArea::RenderArea(QWidget *parent) //clean up this WHOLE thing, all of it
+    : QWidget(parent)
 
 {
     setAutoFillBackground(true);
