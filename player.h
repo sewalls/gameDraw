@@ -19,7 +19,7 @@ public:
 
     void keyPressEvent(QKeyEvent *event) override;
     void keyReleaseEvent(QKeyEvent *event) override;
-
+    //privatize these things
     double acelX = 0;
     double acelY = 0;
     double velX = 0;
@@ -30,7 +30,6 @@ public:
     unsigned int size = 10;
 
     std::vector<QPointF> prevPos;
-    QPainterPath poses;
 };
 
 #endif // PLAYER_H

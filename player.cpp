@@ -111,12 +111,15 @@ void Player::randomDirection() {
     jerkY = dist(e2);
 }
 
-void Player::target(QPointF target) {
+void Player::target(QPointF target) { //fix orbital motion? also someone tell the worms that you can wrap around the screen, they don't account for that right now
     if(target.x() - pos.x() > 0) {
         jerkX = 1;
     }
     else if(target.x() - pos.x() < 0) {
         jerkX = -1;
+    }
+    else {
+        jerkX = 0;
     }
 
     if(target.y() - pos.y() > 0) {
@@ -124,5 +127,8 @@ void Player::target(QPointF target) {
     }
     else if(target.y() - pos.y() < 0) {
         jerkY = -1;
+    }
+    else {
+        jerkY = 0;
     }
 }

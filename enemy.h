@@ -10,6 +10,8 @@ public:
     void draw(QPainter *painter) override;
     void update() override;
     void targetize(QPointF pos) {target = pos;}
+    void grow(unsigned int growth) {size += growth;}
+    void randomDirection();
 
     void keyPressEvent(QKeyEvent *event) override;
     void keyReleaseEvent(QKeyEvent *event) override;
@@ -22,6 +24,10 @@ private:
     double velY = 0;
     int jerkX = 0;
     int jerkY = 0;
+    double brake = 0.99;
+    unsigned int size = 10;
+
+    std::vector<QPointF> prevPos;
 };
 
 #endif // ENEMY_H

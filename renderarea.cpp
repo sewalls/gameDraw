@@ -3,8 +3,8 @@
 
 #include <QPainter>
 
-RenderArea::RenderArea(QWidget *parent)
-    : QWidget(parent)/*, food({200, 220})*/
+RenderArea::RenderArea(QWidget *parent) //clean up this WHOLE thing, all of it
+    : QWidget(parent)
 
 {
     setAutoFillBackground(true);
@@ -13,40 +13,38 @@ RenderArea::RenderArea(QWidget *parent)
     brush.setStyle(Qt::BrushStyle::NoBrush);
     timer.start(10, this);
     food.move();
+    elements.push_back(&player);
+    elements.push_back(&food);
+    elements.push_back(&enemyPlayer);
+    elements.push_back(&enemyFood);
+    elements.push_back(&enemyRandom);
 }
 
 void RenderArea::paintEvent(QPaintEvent * /* event */)
 {
     QPainter painter(this);
-    painter.setPen(pen);
-    player.draw(&painter);
-    testPlayer.draw(&painter);
-    testPlayerTwo.draw(&painter);
-    testPlayerThree.draw(&painter);
-    food.draw(&painter);
-    painter.setBrush(brush);
-    //enemyTest.draw(&painter);
+    for(auto& e : elements) {
+        painter.save();
+        e->draw(&painter);
+        painter.restore();
+    }
 }
 
 void RenderArea::timerEvent(QTimerEvent *event) {
+    checkEat();
+    checkCollision();
+    enemyPlayer.targetize(player.pos);
+    enemyFood.targetize(food.pos);
+    enemyRandom.randomDirection();
+    for(auto& e : elements) {
+        e->update();
+    }
     update();
-    player.update();
-    testPlayer.target(player.pos);
-    testPlayer.update();
-    testPlayerTwo.randomDirection();
-    testPlayerTwo.update();
-    testPlayerThree.target(food.pos);
-    testPlayerThree.update();
-    food.update();
-    playerEat();
-    //enemyTest.targetize(player.pos);
-    //enemyTest.update();
 }
 
 void RenderArea::keyPressEvent(QKeyEvent *event) {
     switch(event->key()) {
     case (Qt::Key_E):
-
         break;
     }
     player.keyPressEvent(event);
@@ -62,21 +60,25 @@ void RenderArea::mousePressEvent(QMouseEvent *event) {
     update();
 }
 
-void RenderArea::playerEat() {
+void RenderArea::checkEat() {
     if((player.pos - food.pos).manhattanLength() < 20) {
         player.grow(1);
         food.move();
     }
-    if((testPlayer.pos - food.pos).manhattanLength() < 20) {
-        testPlayer.grow(2);
+    if((enemyPlayer.pos - food.pos).manhattanLength() < 20) {
+        enemyPlayer.grow(2);
         food.move();
     }
-    if((testPlayerTwo.pos - food.pos).manhattanLength() < 20) {
-        testPlayerTwo.grow(2);
+    if((enemyFood.pos - food.pos).manhattanLength() < 20) {
+        enemyFood.grow(2);
+        food.move();
+    }
+    if((enemyRandom.pos - food.pos).manhattanLength() < 20) {
+        enemyRandom.grow(2);
         food.move();
     }
 }
 
-void RenderArea::collision() {
+void RenderArea::checkCollision() { //implement this
 
 }

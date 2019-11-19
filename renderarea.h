@@ -65,8 +65,8 @@ class RenderArea : public QWidget
 
 public:
     RenderArea(QWidget *parent = nullptr);
-    void playerEat();
-    void collision();
+    void checkEat();
+    void checkCollision();
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -80,11 +80,14 @@ private:
     Player testPlayer;
     Player testPlayerTwo;
     Player testPlayerThree;
-    Enemy enemyTest;
+    Enemy enemyPlayer;
+    Enemy enemyFood;
+    Enemy enemyRandom;
     Food food;
     QPen pen;
     QBrush brush;
     QBasicTimer timer;
+    std::vector<Grelement*> elements;
 };
 
 #endif // RENDERAREA_H
