@@ -7,10 +7,11 @@ Enemy::Enemy()
 }
 
 void Enemy::draw(QPainter *painter) {
-    painter->drawEllipse(pos, 10, 10);
+    painter->setBrush(QBrush(Qt::red));
     for(unsigned int i = prevPos.size() - size; i < prevPos.size(); i++) {
         painter->drawEllipse(prevPos[i], 9, 9);
     }
+    painter->drawEllipse(pos, 10, 10);
 }
 void Enemy::keyPressEvent(QKeyEvent *event) {
 
@@ -24,8 +25,11 @@ void Enemy::randomDirection() {
     std::mt19937 e2(static_cast<unsigned int>(time(nullptr)));
     std::uniform_int_distribution<> dist(-1, 1);
 
-    jerkX = dist(e2);
-    jerkY = dist(e2);
+    acelX = dist(e2) / 1.999;
+    acelY = dist(e2) / 1.999;
+
+    velX = velX * 0.9;
+    velY = velY * 0.9;
 }
 
 void Enemy::update() {
@@ -46,9 +50,11 @@ void Enemy::update() {
 
     if(target.x() - pos.x() > 0) {
         jerkX = 1;
+        velY = velY * 0.98;
     }
     else if(target.x() - pos.x() < 0) {
         jerkX = -1;
+        velY = velY * 0.98;
     }
     else {
         jerkX = 0;
@@ -56,9 +62,11 @@ void Enemy::update() {
 
     if(target.y() - pos.y() > 0) {
         jerkY = 1;
+        velX = velX * 0.98;
     }
     else if(target.y() - pos.y() < 0) {
         jerkY = -1;
+        velX = velX * 0.98;
     }
     else {
         jerkY = 0;
@@ -77,14 +85,14 @@ void Enemy::update() {
         acelY += -0.005;
     }
 
+    velX = velX * brake;
+    velY = velY * brake;
+
     velX += acelX;
     velY += acelY;
 
     acelX += -acelX * 0.05;
     acelY += -acelY * 0.05;
-
-    velX = velX * brake;
-    velY = velY * brake;
 
     pos.setX(pos.x() + velX);
     pos.setY(pos.y() + velY);

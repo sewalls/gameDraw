@@ -3,7 +3,7 @@
 
 #include <QPainter>
 
-RenderArea::RenderArea(QWidget *parent) //clean up this WHOLE thing, all of it
+RenderArea::RenderArea(QWidget *parent)
     : QWidget(parent)
 
 {
@@ -23,29 +23,59 @@ RenderArea::RenderArea(QWidget *parent) //clean up this WHOLE thing, all of it
 void RenderArea::paintEvent(QPaintEvent * /* event */)
 {
     QPainter painter(this);
-    for(auto& e : elements) {
-        painter.save();
-        e->draw(&painter);
-        painter.restore();
+    switch(state) {
+    case(GameState::Playing): {
+        for(auto& e : elements) {
+            painter.save();
+            e->draw(&painter);
+            painter.restore();
+        }
+        break;
+    }
+    case(GameState::Dead): {
+        painter.drawText(550, 350, "DEAD");
+        break;
+    }
+    case(GameState::Menu): {
+        painter.drawText(500, 350, "SPACE TO PLAY");
+        break;
+    }
     }
 }
 
 void RenderArea::timerEvent(QTimerEvent *event) {
-    checkEat();
-    checkCollision();
-    enemyPlayer.targetize(player.pos);
-    enemyFood.targetize(food.pos);
-    enemyRandom.randomDirection();
-    for(auto& e : elements) {
-        e->update();
+    switch(state) {
+    case (GameState::Playing): {
+        checkEat();
+        checkCollision(player, enemyPlayer);
+        checkCollision(player, enemyFood);
+        checkCollision(player, enemyRandom);
+        enemyPlayer.targetize(player.pos);
+        enemyFood.targetize(food.pos);
+        enemyRandom.randomDirection();
+        for(auto& e : elements) {
+            e->update();
+        }
+        update();
+        break;
     }
-    update();
+    case (GameState::Dead): {
+        break;
+    }
+    case (GameState::Menu): {
+        break;
+    }
+    }
 }
 
 void RenderArea::keyPressEvent(QKeyEvent *event) {
     switch(event->key()) {
-    case (Qt::Key_E):
+    case (Qt::Key_E): {
         break;
+    }
+    case (Qt::Key_Space): {
+        state = GameState::Playing;
+    }
     }
     player.keyPressEvent(event);
     update();
@@ -79,6 +109,10 @@ void RenderArea::checkEat() {
     }
 }
 
-void RenderArea::checkCollision() { //implement this
-
+void RenderArea::checkCollision(Player p1, Enemy e1) { //implement this
+    for(unsigned int i = e1.prevPos.size() - e1.size; i < e1.prevPos.size(); i++) {
+        if(QLineF(p1.pos, e1.prevPos[i]).length() <= 20) {
+            state = GameState::Dead;
+        }
+    }
 }

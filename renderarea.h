@@ -59,6 +59,8 @@
 #include "food.h"
 #include "player.h"
 
+enum class GameState { Menu, Playing, Dead };
+
 class RenderArea : public QWidget
 {
     Q_OBJECT
@@ -66,7 +68,7 @@ class RenderArea : public QWidget
 public:
     RenderArea(QWidget *parent = nullptr);
     void checkEat();
-    void checkCollision();
+    void checkCollision(Player p1, Enemy e1);
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -76,6 +78,7 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
 
 private:
+    GameState state = GameState::Menu;
     Player player;
     Player testPlayer;
     Player testPlayerTwo;

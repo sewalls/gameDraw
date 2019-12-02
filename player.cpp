@@ -6,13 +6,15 @@ Player::Player()
 }
 
 void Player::draw(QPainter *painter) {
-    painter->drawEllipse(pos, 10, 10);
     painter->drawText(QPointF{10, 10}, "P: " + QString::number(std::round(pos.x() * 1000) / 1000) + ", " + QString::number(std::round(pos.y() * 1000) / 1000));
     painter->drawText(QPointF{10, 25}, "V: " + QString::number(std::round(velX * 1000) / 1000) + ", " + QString::number(std::round(velY * 1000) / 1000));
+
+    painter->setBrush(QBrush(Qt::blue));
 
     for(unsigned int i = prevPos.size() - size; i < prevPos.size(); i++) {
         painter->drawEllipse(prevPos[i], 9, 9);
     }
+    painter->drawEllipse(pos, 10, 10);
 }
 
 void Player::keyPressEvent(QKeyEvent *event) {
@@ -55,13 +57,10 @@ void Player::keyReleaseEvent(QKeyEvent *event) {
     case (Qt::Key_Shift):
         brake = 0.99;
         break;
-    case (Qt::Key_Space):
-        size++;
-        break;
     }
 }
 
-void Player::update() { //hard code a circle 100 radius around 250, 150
+void Player::update() {
     prevPos.push_back(pos);
 
     if(pos.x() > 1200) {
@@ -101,34 +100,4 @@ void Player::update() { //hard code a circle 100 radius around 250, 150
 
     pos.setX(pos.x() + velX);
     pos.setY(pos.y() + velY);
-}
-
-void Player::randomDirection() {
-    std::mt19937 e2(static_cast<unsigned int>(time(nullptr)));
-    std::uniform_int_distribution<> dist(-1, 1);
-
-    jerkX = dist(e2);
-    jerkY = dist(e2);
-}
-
-void Player::target(QPointF target) { //fix orbital motion? also someone tell the worms that you can wrap around the screen, they don't account for that right now
-    if(target.x() - pos.x() > 0) {
-        jerkX = 1;
-    }
-    else if(target.x() - pos.x() < 0) {
-        jerkX = -1;
-    }
-    else {
-        jerkX = 0;
-    }
-
-    if(target.y() - pos.y() > 0) {
-        jerkY = 1;
-    }
-    else if(target.y() - pos.y() < 0) {
-        jerkY = -1;
-    }
-    else {
-        jerkY = 0;
-    }
 }

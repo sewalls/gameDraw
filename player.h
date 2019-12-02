@@ -14,11 +14,10 @@ public:
     void draw(QPainter *painter) override;
     void update() override;
     void grow(unsigned int growth) {size += growth;}
-    void randomDirection();
-    void target(QPointF target);
 
     void keyPressEvent(QKeyEvent *event) override;
     void keyReleaseEvent(QKeyEvent *event) override;
+
     //privatize these things
     double acelX = 0;
     double acelY = 0;

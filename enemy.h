@@ -15,6 +15,11 @@ public:
 
     void keyPressEvent(QKeyEvent *event) override;
     void keyReleaseEvent(QKeyEvent *event) override;
+    std::vector<QPointF> prevPos;
+
+
+    unsigned int size = 10;
+    //reprivatize this
 
 private:
     QPointF target = {0, 0};
@@ -25,9 +30,6 @@ private:
     int jerkX = 0;
     int jerkY = 0;
     double brake = 0.99;
-    unsigned int size = 10;
-
-    std::vector<QPointF> prevPos;
 };
 
 #endif // ENEMY_H
