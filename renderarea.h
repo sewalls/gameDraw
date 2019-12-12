@@ -68,7 +68,7 @@ class RenderArea : public QWidget
 public:
     RenderArea(QWidget *parent = nullptr);
     void checkEat();
-    void checkCollision(Player p1, Enemy e1);
+    void checkCollision(Player &p1, Enemy &e1);
 
 protected:
     void paintEvent(QPaintEvent *event) override;

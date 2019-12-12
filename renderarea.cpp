@@ -13,6 +13,9 @@ RenderArea::RenderArea(QWidget *parent)
     brush.setStyle(Qt::BrushStyle::NoBrush);
     timer.start(10, this);
     food.move();
+    enemyPlayer.setColor(Qt::darkMagenta);
+    enemyFood.setColor(Qt::darkRed);
+    enemyRandom.setColor(Qt::darkYellow);
     elements.push_back(&player);
     elements.push_back(&food);
     elements.push_back(&enemyPlayer);
@@ -23,6 +26,9 @@ RenderArea::RenderArea(QWidget *parent)
 void RenderArea::paintEvent(QPaintEvent * /* event */)
 {
     QPainter painter(this);
+    QFont font = painter.font();
+    font.setPixelSize(40);
+    painter.setFont(font);
     switch(state) {
     case(GameState::Playing): {
         for(auto& e : elements) {
@@ -30,14 +36,23 @@ void RenderArea::paintEvent(QPaintEvent * /* event */)
             e->draw(&painter);
             painter.restore();
         }
+        painter.save();                     //this draws those border rectangles
+        painter.setBrush(Qt::black);
+        painter.setOpacity(0.5);
+        painter.drawRect(0, 0, 1600, 100);
+        painter.drawRect(0, 0, 100, 900);
+        painter.drawRect(1500, 0, 100, 900);
+        painter.drawRect(0, 800, 1600, 100);
+        painter.restore();
         break;
     }
     case(GameState::Dead): {
-        painter.drawText(550, 350, "DEAD");
+        painter.drawText(QPointF{700, 450}, "DEAD");
+        painter.drawText(QPointF{650, 500}, "Score: " + QString::fromStdString(std::to_string(player.getScore())));
         break;
     }
     case(GameState::Menu): {
-        painter.drawText(500, 350, "SPACE TO PLAY");
+        painter.drawText(650, 450, "SPACE TO PLAY");
         break;
     }
     }
@@ -73,8 +88,17 @@ void RenderArea::keyPressEvent(QKeyEvent *event) {
     case (Qt::Key_E): {
         break;
     }
+    case (Qt::Key_R): {
+        player.reset();
+        enemyPlayer.reset();
+        enemyFood.reset();
+        enemyRandom.reset();
+        state = GameState::Playing;
+        break;
+    }
     case (Qt::Key_Space): {
         state = GameState::Playing;
+        break;
     }
     }
     player.keyPressEvent(event);
@@ -93,6 +117,7 @@ void RenderArea::mousePressEvent(QMouseEvent *event) {
 void RenderArea::checkEat() {
     if((player.pos - food.pos).manhattanLength() < 20) {
         player.grow(1);
+        player.bumpScore();
         food.move();
     }
     if((enemyPlayer.pos - food.pos).manhattanLength() < 20) {
@@ -109,10 +134,19 @@ void RenderArea::checkEat() {
     }
 }
 
-void RenderArea::checkCollision(Player p1, Enemy e1) { //implement this
-    for(unsigned int i = e1.prevPos.size() - e1.size; i < e1.prevPos.size(); i++) {
-        if(QLineF(p1.pos, e1.prevPos[i]).length() <= 20) {
-            state = GameState::Dead;
+void RenderArea::checkCollision(Player& p1, Enemy& e1) {
+    if(e1.getWait() < 0) {
+        for(unsigned int i = e1.prevPos.size() - e1.getSize(); i < e1.prevPos.size(); i++) { //enemy kills you
+            if(QLineF(p1.pos, e1.prevPos[i]).length() <= 20) {
+                state = GameState::Dead;
+            }
+        }
+
+        for(unsigned int i = p1.getPrevPos().size() - p1.getSize(); i < p1.getPrevPos().size(); i++) { //you kill enemy
+            if(QLineF(e1.pos, p1.getPrevPos()[i]).length() <= 20) {
+                e1.reset();
+                p1.bumpScore();
+            }
         }
     }
 }

@@ -6,15 +6,22 @@ Player::Player()
 }
 
 void Player::draw(QPainter *painter) {
-    painter->drawText(QPointF{10, 10}, "P: " + QString::number(std::round(pos.x() * 1000) / 1000) + ", " + QString::number(std::round(pos.y() * 1000) / 1000));
-    painter->drawText(QPointF{10, 25}, "V: " + QString::number(std::round(velX * 1000) / 1000) + ", " + QString::number(std::round(velY * 1000) / 1000));
-
     painter->setBrush(QBrush(Qt::blue));
 
     for(unsigned int i = prevPos.size() - size; i < prevPos.size(); i++) {
         painter->drawEllipse(prevPos[i], 9, 9);
+        painter->drawEllipse(QPointF{prevPos[i].x() + 1400, prevPos[i].y()}, 9, 9);
+        painter->drawEllipse(QPointF{prevPos[i].x() - 1400, prevPos[i].y()}, 9, 9);
+        painter->drawEllipse(QPointF{prevPos[i].x(), prevPos[i].y() + 700}, 9, 9);
+        painter->drawEllipse(QPointF{prevPos[i].x(), prevPos[i].y() - 700}, 9, 9);
     }
+
+
     painter->drawEllipse(pos, 10, 10);
+    painter->drawEllipse(QPointF{pos.x() + 1400, pos.y()}, 10, 10);
+    painter->drawEllipse(QPointF{pos.x() - 1400, pos.y()}, 10, 10);
+    painter->drawEllipse(QPointF{pos.x(), pos.y() + 700}, 9, 9);
+    painter->drawEllipse(QPointF{pos.x(), pos.y() - 700}, 9, 9);
 }
 
 void Player::keyPressEvent(QKeyEvent *event) {
@@ -30,9 +37,6 @@ void Player::keyPressEvent(QKeyEvent *event) {
         break;
     case (Qt::Key_D):
         jerkX += 1;
-        break;
-    case (Qt::Key_R):
-        pos = {250, 150};
         break;
     case (Qt::Key_Shift):
         brake = 0.95;
@@ -63,18 +67,19 @@ void Player::keyReleaseEvent(QKeyEvent *event) {
 void Player::update() {
     prevPos.push_back(pos);
 
-    if(pos.x() > 1200) {
-        pos.setX(0);
+    if(pos.x() > 1500) {
+        pos.setX(100);
     }
     if(pos.y() > 800) {
-        pos.setY(0);
+        pos.setY(100);
     }
-    if(pos.x() < 0) {
-        pos.setX(1200);
+    if(pos.x() < 100) {
+        pos.setX(1500);
     }
-    if(pos.y() < 0) {
+    if(pos.y() < 100) {
         pos.setY(800);
     }
+
 
     if(jerkX >= 1) {
         acelX += 0.005;
@@ -100,4 +105,14 @@ void Player::update() {
 
     pos.setX(pos.x() + velX);
     pos.setY(pos.y() + velY);
+}
+
+void Player::reset() {
+    score = 0;
+    acelX = 0;
+    acelY = 0;
+    velX = 0;
+    velY = 0;
+    size = 10;
+    pos = {250, 150};
 }
